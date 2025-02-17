@@ -4,10 +4,11 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["linkedin-jobs"]
+dependencies = ["linkedin-jobs", "job-processor", "openai>=1.63.2"]
 
 [tool.uv.sources]
 linkedin-jobs = { workspace = true }
+job-processor = { workspace = true }
 
 [tool.uv.workspace]
 members = ["packages/*"]

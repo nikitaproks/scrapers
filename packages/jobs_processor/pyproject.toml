@@ -1,0 +1,14 @@
+[project]
+name = "jobs-processor"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = ["sqlalchemy>=2.0.38"]
+
+[project.scripts]
+job-processor = "job_processor:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
