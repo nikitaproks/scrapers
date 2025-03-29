@@ -47,7 +47,7 @@ class Tab:
 
 
 class Browser:
-    def __init__(self, headless: bool = True):
+    def __init__(self, headless: bool = False):
         project_temp_profile = os.path.join(os.getcwd(), "tmp")
         if not os.path.exists(project_temp_profile):
             os.makedirs(project_temp_profile)
@@ -55,6 +55,8 @@ class Browser:
         options = Options()
         options.add_argument(f"--user-data-dir={project_temp_profile}")
         options.add_argument("--profile-directory=Profile 1")
+        if headless:
+            options.add_argument("--headless")
         options.add_experimental_option(
             "excludeSwitches", ["enable-automation"]
         )

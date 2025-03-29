@@ -1,6 +1,14 @@
 from datetime import datetime, timezone
 
-from sqlalchemy import Column, DateTime, Integer, String, Text, create_engine
+from sqlalchemy import (
+    Column,
+    DateTime,
+    Float,
+    Integer,
+    String,
+    Text,
+    create_engine,
+)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -19,6 +27,7 @@ class Job(Base):
     place = Column(String, nullable=True)
     description = Column(Text, nullable=False)
     created_at = Column(DateTime, default=datetime.now(timezone.utc))
+    ai_fit_score = Column(Float, nullable=True)
 
 
 Base.metadata.create_all(engine)

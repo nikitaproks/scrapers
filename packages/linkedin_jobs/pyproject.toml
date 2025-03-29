@@ -9,6 +9,7 @@ dependencies = [
     "pydantic>=2.10.6",
     "selenium>=4.28.1",
     "sqlalchemy>=2.0.38",
+    "tqdm>=4.67.1",
 ]
 
 [project.scripts]

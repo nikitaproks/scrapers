@@ -8,11 +8,14 @@ from pydantic import BaseModel
 from selenium.webdriver import Chrome
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
+from tqdm import tqdm
 
 from linkedin_jobs.classes import Browser, Tab
 from linkedin_jobs.db import Job, session
 
 CAPTION_RE = re.compile(r"(.*)\s\((.*)\)")
+
+EXISTING_JOBS = [str(job.linkedin_id) for job in session.query(Job).all()]
 
 
 def find_element(object: WebElement | Chrome, xpath: str) -> WebElement | None:
@@ -68,20 +71,28 @@ class JobSearch:
     def __init__(
         self,
         tab: Tab,
-        keywords: str,
         city: GeoId,
-        distance: int = 10,
+        distance: int | None = None,
+        keywords: str | None = None,
+        titles: list[str] = [],
+        job_types: list[str] = [],
+        job_format: list[str] = [],
     ):
         self.driver = tab.driver
         self.parameters = {
-            "distance": distance,
+            "distance": distance if distance else None,
             "f_TPR": "r86400",
+            "f_JT": ",".join(job_types),
+            "f_T": ",".join(titles),
+            "f_WT": ",".join(job_format),
             "geoId": city.value,
-            "keywords": keywords,
+            "keywords": keywords if keywords else None,
             "origin": "JOB_SEARCH_PAGE_JOB_FILTER",
             "refresh": "true",
         }
-        self.jobs_number = 25
+        self.parameters = {
+            key: value for key, value in self.parameters.items() if value
+        }
 
     def _open_search(self, page: int = 0):
         temp_parameters = self.parameters.copy()
@@ -93,9 +104,10 @@ class JobSearch:
         self.driver.get(str(url))
         time.sleep(2)
 
-    def _parse_jobs_number(self):
+    def _parse_jobs_number(self) -> int:
         if number_element := find_element(self.driver, Element.JobNumber):
-            self.jobs_number = int(number_element.text.split()[0])
+            return int(number_element.text.replace(",", "").split()[0])
+        return 0
 
     def _load_all_cards(self):
         previous_count = 0
@@ -115,7 +127,10 @@ class JobSearch:
             time.sleep(1)
 
     def _read_job(self, card: WebElement) -> JobPosting | None:
-        if not (linkedin_id := card.get_attribute("data-job-id")):
+        if (
+            not (linkedin_id := card.get_attribute("data-job-id"))
+            or linkedin_id in EXISTING_JOBS
+        ):
             return None
 
         time.sleep(random.randrange(5, 20) / 10)
@@ -178,18 +193,22 @@ class JobSearch:
 
     def scrape(self):
         job_postings: list[JobPosting] = []
-        i = 0
-        while i < math.ceil(self.jobs_number / 25):
-            self._open_search(page=i)
-            self._parse_jobs_number()
-            job_postings += self._read_jobs()
-            i += 1
+        self._open_search(page=0)
+        pages_total = math.ceil(self._parse_jobs_number() / 25)
+        with tqdm(
+            total=pages_total, desc="Fetching pages", unit="page"
+        ) as progress:
+            for i in range(1, pages_total):
+                job_postings += self._read_jobs()
+                progress.update(1)
+                self._open_search(page=i)
+                time.sleep(1)
 
         self._save_to_db(job_postings)
 
 
 def main():
-    browser = Browser()
+    browser = Browser(headless=False)
 
     browser.main_tab.open("https://www.linkedin.com/login")
     time.sleep(2)
@@ -197,9 +216,15 @@ def main():
     if "linkedin.com/login" in browser.driver.current_url:
         input("Press Enter to continue...")
 
-    job_search = JobSearch(browser.main_tab, "Software", GeoId.Munich)
+    job_search = JobSearch(
+        browser.main_tab,
+        GeoId.Munich,
+        distance=10,
+        titles=["9"],
+        job_types=["F"],
+        job_format=["1,3"],
+    )
     job_search.scrape()
-    input("Press Enter to continue...")
 
 
 if __name__ == "__main__":
