@@ -379,6 +379,18 @@ wheels = [
 name = "stocks"
 version = "0.1.0"
 source = { editable = "packages/stocks" }
+dependencies = [
+    { name = "pydantic" },
+    { name = "selenium" },
+    { name = "tqdm" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "pydantic", specifier = ">=2.11.1" },
+    { name = "selenium", specifier = ">=4.28.1" },
+    { name = "tqdm", specifier = ">=4.67.1" },
+]
 
 [[package]]
 name = "tqdm"

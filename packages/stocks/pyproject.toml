@@ -5,7 +5,11 @@ description = "Add your description here"
 readme = "README.md"
 authors = [{ name = "Mykyta Prokaiev", email = "mykytaprokaiev@gmail.com" }]
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "pydantic>=2.11.1",
+    "selenium>=4.28.1",
+    "tqdm>=4.67.1",
+]
 
 [project.scripts]
 stocks = "stocks.main:main"
