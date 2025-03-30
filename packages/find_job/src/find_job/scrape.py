@@ -10,8 +10,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from tqdm import tqdm
 
-from linkedin_jobs.classes import Browser, Tab
-from linkedin_jobs.db import Job, session
+from browser.lib import Browser, Tab
+from find_job.db import Job, session
 
 CAPTION_RE = re.compile(r"(.*)\s\((.*)\)")
 
@@ -207,9 +207,8 @@ class JobSearch:
         self._save_to_db(job_postings)
 
 
-def main():
-    browser = Browser(headless=False)
-
+def scrape():
+    browser = Browser(headless=False, profile_name="jobs")
     browser.main_tab.open("https://www.linkedin.com/login")
     time.sleep(2)
 
@@ -225,7 +224,3 @@ def main():
         job_format=["1,3"],
     )
     job_search.scrape()
-
-
-if __name__ == "__main__":
-    main()

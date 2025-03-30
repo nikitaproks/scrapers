@@ -1,16 +1,20 @@
 [project]
-name = "job-processor"
+name = "find_job"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
+authors = [{ name = "Mykyta Prokaiev", email = "mykytaprokaiev@gmail.com" }]
 requires-python = ">=3.13"
 dependencies = [
+    "pydantic>=2.10.6",
+    "selenium>=4.28.1",
     "sqlalchemy>=2.0.38",
     "tqdm>=4.67.1",
+    "typer>=0.15.2",
 ]
 
 [project.scripts]
-job-processor = "job_processor:main"
+find_job = "find_job.main:main"
 
 [build-system]
 requires = ["hatchling"]

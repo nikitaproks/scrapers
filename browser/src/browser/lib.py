@@ -47,13 +47,17 @@ class Tab:
 
 
 class Browser:
-    def __init__(self, headless: bool = False):
-        project_temp_profile = os.path.join(os.getcwd(), "tmp")
-        if not os.path.exists(project_temp_profile):
-            os.makedirs(project_temp_profile)
-
+    def __init__(self, headless: bool = False, profile_name: str | None = None):
         options = Options()
-        options.add_argument(f"--user-data-dir={project_temp_profile}")
+        if profile_name:
+            project_temp_profile = os.path.join(
+                os.getcwd(), "profiles", profile_name
+            )
+            if not os.path.exists(project_temp_profile):
+                os.makedirs(project_temp_profile)
+
+            options.add_argument(f"--user-data-dir=profiles/{profile_name}")
+
         options.add_argument("--profile-directory=Profile 1")
         if headless:
             options.add_argument("--headless")
