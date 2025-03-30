@@ -4,14 +4,15 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["find_job", "browser"]
+dependencies = ["find_job", "browser", "stocks"]
 
 [tool.uv.sources]
 find-job = { workspace = true }
 browser = { workspace = true }
+stocks = { workspace = true }
 
 [tool.uv.workspace]
-members = ["packages/*", "browser", "find_job"]
+members = ["packages/*"]
 
 [dependency-groups]
 dev = ["ruff>=0.11.2"]

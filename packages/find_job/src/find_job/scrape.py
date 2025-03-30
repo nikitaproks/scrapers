@@ -4,13 +4,13 @@ import re
 import time
 from enum import Enum
 
+from browser.lib import Browser, Tab
 from pydantic import BaseModel
 from selenium.webdriver import Chrome
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 from tqdm import tqdm
 
-from browser.lib import Browser, Tab
 from find_job.db import Job, session
 
 CAPTION_RE = re.compile(r"(.*)\s\((.*)\)")
